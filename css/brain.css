@@ -1,0 +1,567 @@
+/*
+ * brain.css — ce qui est propre à Brain.ia : logo, accueil (météo vélo,
+ * horoscope, affirmation), habitudes (carte de régularité) et to-do.
+ * Le corail ne marque que « fait », la progression et le point du logo ;
+ * la météo reste en noir et gris.
+ */
+
+.btn-lg {
+  height: 58px;
+  border-radius: 18px;
+  font-size: 17px;
+}
+
+.link-btn {
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+/* ---------- Logo ---------- */
+
+.brand {
+  font-size: 40px;
+  letter-spacing: -0.045em;
+}
+
+.brand-dot {
+  color: var(--accent);
+}
+
+/* ---------- Accueil ---------- */
+
+.home-stack {
+  display: grid;
+  gap: var(--s-3);
+}
+
+.loading {
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+/* Météo : verdict par créneau, puis le détail heure par heure. */
+
+.wx-block + .wx-block {
+  margin-top: var(--s-5);
+  padding-top: var(--s-5);
+  border-top: 1px solid var(--border);
+}
+
+.wx-head .row-sub {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.wx-head .row-sub i {
+  font-size: 13px;
+}
+
+.wx-verdict {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-top: var(--s-3);
+  padding: 10px 12px;
+  border-radius: var(--r-inner);
+  font-size: var(--fs-small);
+  font-weight: 500;
+  border: 1px solid var(--border-strong);
+  color: var(--text-2);
+}
+
+.wx-verdict i {
+  font-size: 18px;
+  flex: none;
+}
+
+.wx-verdict.is-risk {
+  background: var(--surface-3);
+  border-color: transparent;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.wx-verdict.is-rain {
+  background: var(--primary);
+  border-color: transparent;
+  color: var(--on-primary);
+  font-weight: 600;
+}
+
+.wx-hours {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: var(--s-1);
+  margin-top: var(--s-3);
+}
+
+.wx-hours.is-scroll {
+  grid-auto-columns: 54px;
+  overflow-x: auto;
+  margin-left: -18px;
+  margin-right: -18px;
+  padding: 0 18px;
+  scrollbar-width: none;
+}
+
+.wx-hours.is-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.wx-hour {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: var(--s-2) 0;
+  border-radius: var(--r-control);
+  font-size: var(--fs-caption);
+  color: var(--text-2);
+}
+
+.wx-hour i {
+  font-size: 20px;
+  margin: 2px 0;
+  color: var(--text-3);
+}
+
+.wx-time {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.wx-temp {
+  font-size: var(--fs-small);
+  font-weight: 500;
+  color: var(--text);
+}
+
+.wx-mm {
+  color: var(--text-3);
+}
+
+.wx-hour.is-risk {
+  background: var(--surface-2);
+}
+
+.wx-hour.is-risk i,
+.wx-hour.is-risk .wx-prob {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.wx-hour.is-rain {
+  background: var(--surface-3);
+}
+
+.wx-hour.is-rain i,
+.wx-hour.is-rain .wx-prob,
+.wx-hour.is-rain .wx-mm {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.wx-note {
+  margin-top: var(--s-4);
+}
+
+/* Horoscope et affirmation */
+
+.horoscope {
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.horoscope-original {
+  margin-top: var(--s-3);
+  font-size: 13px;
+  color: var(--text-3);
+}
+
+.horoscope-original summary {
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--text-2);
+  list-style: none;
+}
+
+.horoscope-original summary::-webkit-details-marker {
+  display: none;
+}
+
+.horoscope-original summary::after {
+  content: " ›";
+}
+
+.horoscope-original[open] summary::after {
+  content: " ˅";
+}
+
+.horoscope-original p {
+  margin-top: var(--s-2);
+  line-height: 1.5;
+}
+
+.horoscope-note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--s-3);
+}
+
+.horoscope-note i {
+  font-size: 15px;
+}
+
+.affirmation-card {
+  border-left: 0;
+  border-radius: 0 var(--r-card) var(--r-card) 0;
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.affirmation {
+  font-size: var(--fs-h2);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.35;
+}
+
+/* Habitudes et tâches du jour */
+
+.progress {
+  height: 6px;
+  border-radius: var(--r-pill);
+  background: var(--surface-3);
+  overflow: hidden;
+  margin: calc(-1 * var(--s-2)) 0 var(--s-2);
+}
+
+.progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transition: width var(--t-slow) var(--ease-out);
+}
+
+.home-habit {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-2) 0;
+}
+
+.home-habit + .home-habit {
+  border-top: 1px solid var(--border);
+}
+
+.home-habit .row-main > span,
+.habit-open .row-main > span {
+  display: block;
+}
+
+.home-habit .check,
+.habit-check .check {
+  width: 40px;
+  height: 40px;
+}
+
+.home-tasks .todo-row {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.home-more {
+  margin-top: var(--s-2);
+}
+
+/* ---------- Coche « plusieurs fois par jour » : un anneau qui se remplit ---------- */
+
+.counter-check {
+  position: relative;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  transition: transform var(--t-fast) var(--ease-out);
+}
+
+.counter-check:active {
+  transform: scale(0.9);
+}
+
+.counter-check .ring {
+  position: absolute;
+  inset: 0;
+}
+
+.counter-value {
+  position: relative;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.counter-check.is-done {
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.counter-check.is-done .ring {
+  display: none;
+}
+
+.counter-check.is-done i {
+  font-size: 20px;
+}
+
+/* ---------- Habitudes ---------- */
+
+.habit-list {
+  display: grid;
+  gap: var(--s-3);
+}
+
+.habit-card {
+  padding: 14px 16px 16px;
+}
+
+.habit-head {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+.habit-open {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  text-align: left;
+}
+
+.habit-map {
+  display: block;
+  width: 100%;
+  margin-top: var(--s-4);
+}
+
+.habit-streak {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: var(--s-3);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+.habit-streak i {
+  font-size: 15px;
+  color: var(--accent);
+}
+
+.habit-preview .habit-check {
+  margin-left: auto;
+}
+
+/* Carte de régularité : colonnes = semaines, lignes = lundi → dimanche. */
+
+.heatmap {
+  --cell: 1fr;
+}
+
+.hm-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--weeks), var(--cell));
+  grid-template-rows: repeat(7, auto);
+  grid-auto-flow: column;
+  gap: 3px;
+}
+
+.hm-cell {
+  aspect-ratio: 1;
+  border-radius: 3px;
+  background: var(--surface-3);
+}
+
+.hm-cell.is-on {
+  background: color-mix(in srgb, var(--accent) calc(var(--level, 1) * 100%), var(--surface-3));
+}
+
+.hm-cell.is-today {
+  outline: 1.5px solid var(--text-2);
+  outline-offset: 1px;
+}
+
+.hm-cell.is-future {
+  background: transparent;
+}
+
+.heatmap.is-interactive {
+  --cell: 18px;
+  width: max-content;
+}
+
+.heatmap.is-interactive .hm-cell {
+  border-radius: 4px;
+}
+
+.heatmap.is-interactive button.hm-cell:active {
+  transform: scale(0.85);
+}
+
+.hm-months {
+  display: grid;
+  grid-template-columns: repeat(var(--weeks), var(--cell));
+  gap: 3px;
+  margin-bottom: 6px;
+  font-size: 11px;
+  color: var(--text-3);
+  white-space: nowrap;
+}
+
+.year-card {
+  padding: 16px 0;
+}
+
+.year-scroll {
+  overflow-x: auto;
+  padding: 0 16px;
+  scrollbar-width: none;
+}
+
+.year-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.habit-preview + .bento {
+  margin-bottom: var(--s-2);
+}
+
+/* Réorganiser */
+
+.reorder-row {
+  background: var(--surface);
+  transition: transform var(--t-med) var(--ease-out);
+}
+
+.reorder-list.is-sorting .reorder-row {
+  transition: transform var(--t-fast) var(--ease-out);
+}
+
+.reorder-row.is-dragging {
+  z-index: 2;
+  transition: none;
+  background: var(--surface-2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border-radius: var(--r-inner);
+}
+
+.drag-handle {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-right: -8px;
+  color: var(--text-3);
+  touch-action: none;
+  cursor: grab;
+}
+
+/* ---------- To-do ---------- */
+
+.todo-add {
+  display: flex;
+  gap: var(--s-2);
+  align-items: center;
+}
+
+.todo-add .input {
+  flex: 1;
+}
+
+.todo-add-btn {
+  width: 50px;
+  height: 50px;
+  border-radius: var(--r-control);
+  background: var(--primary);
+  color: var(--on-primary);
+  border: 0;
+}
+
+.todo-add-btn:active {
+  background: var(--primary);
+  filter: brightness(0.9);
+}
+
+.todo-row {
+  gap: var(--s-3);
+}
+
+.todo-open {
+  text-align: left;
+  padding: var(--s-1) 0;
+}
+
+.todo-open .row-sub {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.todo-due {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.todo-due i {
+  font-size: 13px;
+}
+
+.todo-due.is-late {
+  color: var(--text-2);
+  font-weight: 500;
+}
+
+.todo-row.is-done .row-title {
+  color: var(--text-3);
+  text-decoration: line-through;
+  text-decoration-color: var(--text-3);
+}
+
+.check.check-sm {
+  width: 30px;
+  height: 30px;
+}
+
+.check.check-sm svg {
+  width: 16px;
+  height: 16px;
+}
+
+.list .todo-row {
+  --sep-inset: 58px;
+}
+
+/* ---------- Réglages ---------- */
+
+.tag {
+  gap: 4px;
+}
+
+.tag i {
+  font-size: 14px;
+}

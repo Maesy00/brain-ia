@@ -1,8 +1,8 @@
 /*
- * brain.css — ce qui est propre à Brain.ia : logo, accueil (météo vélo,
- * horoscope, affirmation), habitudes (carte de régularité) et to-do.
- * Le corail ne marque que « fait », la progression et le point du logo ;
- * la météo reste en noir et gris.
+ * brain.css — ce qui est propre à Brain.ia : logo, accueil (horoscope,
+ * affirmation, journaling), habitudes (carte de régularité) et to-do.
+ * Le corail marque le logo et la progression globale ; chaque habitude
+ * colore sa coche et sa carte de régularité.
  */
 
 .btn-lg {
@@ -50,109 +50,6 @@
   50% {
     opacity: 0.45;
   }
-}
-
-/* Météo, version compacte : une ligne par trajet (titre + pastille), puis une
-   frise d'une case par heure. Gris clair = Sec, gris moyen = Risque, noir = Pluie. */
-
-.wx-row + .wx-row {
-  margin-top: var(--s-4);
-  padding-top: var(--s-4);
-  border-top: 1px solid var(--border);
-}
-
-.wx-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--s-3);
-}
-
-.wx-title {
-  font-weight: 600;
-  min-width: 0;
-}
-
-.wx-meta {
-  margin-left: 6px;
-  font-size: 13px;
-  font-weight: 400;
-  color: var(--text-3);
-}
-
-.wx-pill {
-  flex: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  height: 26px;
-  padding: 0 10px;
-  border-radius: var(--r-pill);
-  font-size: 13px;
-  font-weight: 600;
-  border: 1px solid var(--border-strong);
-  color: var(--text-2);
-}
-
-.wx-pill i {
-  font-size: 14px;
-}
-
-.wx-pill.is-risk {
-  background: var(--surface-3);
-  border-color: transparent;
-  color: var(--text);
-}
-
-.wx-pill.is-rain {
-  background: var(--primary);
-  border-color: transparent;
-  color: var(--on-primary);
-}
-
-.wx-detail {
-  margin-top: 2px;
-  font-size: 13px;
-  color: var(--text-2);
-  font-variant-numeric: tabular-nums;
-}
-
-.wx-bar {
-  display: grid;
-  grid-template-columns: repeat(var(--n), minmax(0, 1fr));
-  gap: 3px;
-  margin-top: var(--s-3);
-}
-
-.wx-seg {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-}
-
-.wx-tick {
-  height: 6px;
-  border-radius: 3px;
-  background: var(--surface-3);
-}
-
-.wx-seg.is-risk .wx-tick {
-  background: var(--text-3);
-}
-
-.wx-seg.is-rain .wx-tick {
-  background: var(--text);
-}
-
-.wx-hour-label {
-  font-size: 11px;
-  color: var(--text-3);
-  white-space: nowrap;
-}
-
-.wx-note {
-  margin-top: var(--s-4);
 }
 
 /* Horoscope et affirmation */

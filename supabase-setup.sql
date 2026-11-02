@@ -108,39 +108,3 @@ drop policy if exists "brain_daily_update_own" on brain_daily;
 create policy "brain_daily_select_own" on brain_daily for select using (auth.uid() = user_id);
 create policy "brain_daily_insert_own" on brain_daily for insert with check (auth.uid() = user_id);
 create policy "brain_daily_update_own" on brain_daily for update using (auth.uid() = user_id);
-
--- ---------------------------------------------------------------------------
--- Réglages (une ligne par utilisateur) : positions Maison / Travail,
--- créneaux vélo (heures pleines, fin exclue : 7–10 = 7h, 8h, 9h) et seuils de pluie.
--- Sec < risk_prob % et < risk_mm mm ; Pluie si (≥ rain_prob % et ≥ rain_mm_min mm)
--- ou ≥ rain_mm mm ; sinon Risque.
--- ---------------------------------------------------------------------------
-
-create table if not exists brain_settings (
-  user_id uuid primary key references auth.users(id) on delete cascade,
-  home_lat double precision,
-  home_lon double precision,
-  home_label text,
-  work_lat double precision,
-  work_lon double precision,
-  work_label text,
-  out_start smallint not null default 7 check (out_start between 0 and 23),
-  out_end smallint not null default 10 check (out_end between 1 and 24),
-  back_start smallint not null default 17 check (back_start between 0 and 23),
-  back_end smallint not null default 20 check (back_end between 1 and 24),
-  risk_prob smallint not null default 30 check (risk_prob between 0 and 100),
-  risk_mm numeric(4, 2) not null default 0.1,
-  rain_prob smallint not null default 60 check (rain_prob between 0 and 100),
-  rain_mm_min numeric(4, 2) not null default 0.5,
-  rain_mm numeric(4, 2) not null default 1,
-  updated_at timestamptz not null default now()
-);
-
-alter table brain_settings enable row level security;
-
-drop policy if exists "brain_settings_select_own" on brain_settings;
-drop policy if exists "brain_settings_insert_own" on brain_settings;
-drop policy if exists "brain_settings_update_own" on brain_settings;
-create policy "brain_settings_select_own" on brain_settings for select using (auth.uid() = user_id);
-create policy "brain_settings_insert_own" on brain_settings for insert with check (auth.uid() = user_id);
-create policy "brain_settings_update_own" on brain_settings for update using (auth.uid() = user_id);

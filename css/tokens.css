@@ -2,9 +2,8 @@
  * tokens.css — le design system de Brain.ia en variables.
  * Mêmes règles que Coach.ia : fond blanc par défaut (<html data-theme="light">),
  * sombre disponible, direction monochrome, actions en noir (--primary).
- * L'identité de Brain.ia, c'est le corail (--accent) : il ne marque que ce
- * qui est fait, la progression et le point du logo. Les alertes météo
- * restent en noir et gris : un risque de pluie n'est pas une erreur.
+ * L'identité de Brain.ia, c'est le corail (--accent) : le point du logo et la
+ * progression. Chaque habitude remplace --accent par sa propre couleur.
  */
 
 :root {

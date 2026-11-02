@@ -30,21 +30,7 @@ const Storage = (() => {
     },
   };
 
-  const DEFAULT_SETTINGS = {
-    homeLat: null, homeLon: null, homeLabel: null,
-    workLat: null, workLon: null, workLabel: null,
-    outStart: 7, outEnd: 10, backStart: 17, backEnd: 20,
-    riskProb: 30, riskMm: 0.1, rainProb: 60, rainMmMin: 0.5, rainMm: 1,
-  };
-  const SETTING_COLUMNS = {
-    homeLat: "home_lat", homeLon: "home_lon", homeLabel: "home_label",
-    workLat: "work_lat", workLon: "work_lon", workLabel: "work_label",
-    outStart: "out_start", outEnd: "out_end", backStart: "back_start", backEnd: "back_end",
-    riskProb: "risk_prob", riskMm: "risk_mm", rainProb: "rain_prob", rainMmMin: "rain_mm_min", rainMm: "rain_mm",
-  };
-
   const cache = Object.fromEntries(Object.keys(KINDS).map((k) => [k, []]));
-  let settings = { ...DEFAULT_SETTINGS };
   let userId = null;
   let userEmail = "";
 
@@ -111,7 +97,7 @@ const Storage = (() => {
     } = await supabaseClient.auth.getUser();
     userId = user ? user.id : null;
     userEmail = user ? user.email : "";
-    const results = await Promise.all([...Object.keys(KINDS).map(load), loadSettings()]);
+    const results = await Promise.all(Object.keys(KINDS).map(load));
     if (results.every(Boolean)) await archiveOldDone();
     return results.every(Boolean);
   }
@@ -222,42 +208,9 @@ const Storage = (() => {
     return !error;
   }
 
-  // ---- Réglages personnels ----
-
-  async function loadSettings() {
-    const { data, error } = await supabaseClient.from("brain_settings").select("*").maybeSingle();
-    if (error) {
-      console.error("Erreur de chargement des réglages :", error.message);
-      return false;
-    }
-    settings = { ...DEFAULT_SETTINGS };
-    if (data) {
-      for (const [key, col] of Object.entries(SETTING_COLUMNS)) {
-        if (data[col] !== null && data[col] !== undefined) settings[key] = typeof DEFAULT_SETTINGS[key] === "number" ? Number(data[col]) : data[col];
-      }
-    }
-    return true;
-  }
-
-  async function saveSettings(changes) {
-    const next = { ...settings, ...changes };
-    const row = { user_id: userId, updated_at: new Date().toISOString() };
-    for (const [key, col] of Object.entries(SETTING_COLUMNS)) row[col] = next[key];
-    const { error } = await supabaseClient.from("brain_settings").upsert(row, { onConflict: "user_id" });
-    if (error) {
-      console.error("Erreur d'enregistrement des réglages :", error.message);
-      return false;
-    }
-    settings = next;
-    return true;
-  }
-
   return {
     refresh,
     getUserEmail: () => userEmail,
-    getSettings: () => settings,
-    getDefaultSettings: () => ({ ...DEFAULT_SETTINGS }),
-    saveSettings,
     getDaily,
     saveDaily,
 

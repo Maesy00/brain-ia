@@ -55,7 +55,7 @@ const App = (() => {
   );
 
   // Revenir sur l'app après plus d'une minute (ou un autre jour) : on recharge
-  // les données, et l'accueil reprend sa météo, son horoscope et son affirmation.
+  // les données, et l'accueil reprend son horoscope, son affirmation et son idée de journaling.
   document.addEventListener("visibilitychange", async () => {
     if (document.hidden) {
       hiddenAt = Date.now();

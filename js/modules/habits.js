@@ -21,7 +21,7 @@ const Habits = (() => {
     { value: "weekly", label: "Par semaine" },
     { value: "multi", label: "Plusieurs/jour" },
   ];
-  const CARD_WEEKS = 18;
+  const CARD_WEEKS = 26; // six mois sur la carte de la liste
 
   // ---- Règles ----
 
@@ -104,7 +104,7 @@ const Habits = (() => {
   }
 
   // Bouton du jour : case ronde (une fois) ou compteur qui tourne (plusieurs fois).
-  // size « sm » : version compacte, pour les listes de l'accueil.
+  // size « sm » (accueil) ou « md » (cartes de la liste) : versions compactes.
   function dayButton(h, date, onChange, size = "") {
     if (h.goalType !== "multi") {
       const btn = checkButton(isDone(h, date), (done) => save(h, date, done ? 1 : 0, onChange), `Valider ${h.name}`);
@@ -113,11 +113,11 @@ const Habits = (() => {
       return btn;
     }
     const target = dayTarget(h);
-    const px = size === "sm" ? 30 : 44;
+    const px = { sm: 30, md: 34 }[size] || 44;
     const btn = html(`<button type="button" class="counter-check${size ? ` counter-${size}` : ""}" style="${colorVars(h)}" aria-label="${escapeHtml(h.name)} : ajouter une fois"></button>`);
     const paint = (n) => {
       btn.classList.toggle("is-done", n >= target);
-      btn.innerHTML = `${ring(n, target, px, size === "sm" ? 3 : 4)}<span class="counter-value num">${n >= target ? icon("check", "regular") : `${n}/${target}`}</span>`;
+      btn.innerHTML = `${ring(n, target, px, size ? 3 : 4)}<span class="counter-value num">${n >= target ? icon("check", "regular") : `${n}/${target}`}</span>`;
     };
     paint(count(h, date));
     // Un tap ajoute une fois ; une fois l'objectif atteint, un tap repart de zéro.
@@ -247,6 +247,12 @@ const Habits = (() => {
     return `<span class="tile${size ? ` ${size}` : ""}" style="--dot:${escapeHtml(h.color)}">${icon(h.icon)}</span>`;
   }
 
+  // Sous-titre de la carte : la progression, et la série quand elle n'y est pas déjà.
+  function cardLabel(h, s, today) {
+    const progress = progressLabel(h, today);
+    return h.goalType === "daily" || !s.value ? progress : `${progress} · série ${s.value} ${h.goalType === "weekly" ? "sem." : "j"}`;
+  }
+
   function habitCard(h, today) {
     const s = streak(h);
     const card = html(`
@@ -256,16 +262,15 @@ const Habits = (() => {
             ${habitTile(h)}
             <span class="row-main">
               <span class="row-title">${escapeHtml(h.name)}</span>
-              <span class="row-sub">${escapeHtml(progressLabel(h, today))}</span>
+              <span class="row-sub">${escapeHtml(cardLabel(h, s, today))}</span>
             </span>
           </button>
           <span class="habit-check"></span>
         </div>
         <button type="button" class="habit-map" aria-label="Voir le détail de ${escapeHtml(h.name)}">${heatmap(h, CARD_WEEKS)}</button>
-        ${s.value ? `<p class="habit-streak" style="${colorVars(h)}">${icon("flame", "fill")}<span class="num">${s.value}</span> ${escapeHtml(s.unit)}</p>` : ""}
       </section>
     `);
-    card.querySelector(".habit-check").appendChild(dayButton(h, today));
+    card.querySelector(".habit-check").appendChild(dayButton(h, today, null, "md"));
     card.querySelector(".habit-open").addEventListener("click", () => openDetail(h.id));
     card.querySelector(".habit-map").addEventListener("click", () => openDetail(h.id));
     return card;

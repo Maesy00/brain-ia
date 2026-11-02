@@ -61,7 +61,7 @@ const Home = (() => {
         </section>
 
         <section class="card">
-          <div class="card-label">${icon("pencil-simple-line")} Journal du jour</div>
+          <div class="card-label">${icon("pencil-simple-line")} Journal du jour<button type="button" class="card-action link-btn" data-journal-next>${icon("shuffle")} Une autre</button></div>
           <p class="journal-prompt">${escapeHtml(Journal.today())}</p>
         </section>
 
@@ -102,6 +102,14 @@ const Home = (() => {
     const taskList = screen.querySelector(".home-tasks");
     tasks.forEach((t) => taskList.appendChild(Todo.row(t)));
 
+    screen.querySelector("[data-journal-next]").addEventListener("click", () => {
+      Haptic.tap();
+      const prompt = screen.querySelector(".journal-prompt");
+      prompt.classList.remove("is-new");
+      prompt.textContent = Journal.another();
+      void prompt.offsetWidth; // relance l'animation
+      prompt.classList.add("is-new");
+    });
     const newHabit = screen.querySelector("[data-new-habit]");
     if (newHabit) newHabit.addEventListener("click", () => Habits.edit(null));
     screen.querySelectorAll("[data-all-tasks]").forEach((b) => b.addEventListener("click", () => App.go("todo")));

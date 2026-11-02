@@ -1,6 +1,7 @@
 /*
  * journal.js — une question de journaling par jour, choisie selon la date
- * (jour de l'année), comme l'affirmation : la même toute la journée.
+ * (jour de l'année), comme l'affirmation : la même toute la journée,
+ * sauf si on en demande une autre.
  * Banque locale en français : gratuite, hors ligne, jamais en panne.
  */
 
@@ -380,9 +381,40 @@ const Journal = (() => {
     return Math.floor((date - start) / 86400000);
   }
 
-  function today() {
-    return LIST[(dayOfYear(new Date()) - 1) % LIST.length];
+  // « Une autre » : la question choisie est retenue jusqu'à minuit, sur cet
+  // appareil seulement (simple confort, rien n'est envoyé à la base).
+  const KEY = "brain.journal";
+
+  function readChoice() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(KEY));
+      return saved && saved.date === DateUtil.today() ? saved.index : null;
+    } catch {
+      return null;
+    }
   }
 
-  return { today, count: LIST.length };
+  function currentIndex() {
+    const chosen = readChoice();
+    return chosen !== null ? chosen : (dayOfYear(new Date()) - 1) % LIST.length;
+  }
+
+  function today() {
+    return LIST[currentIndex()];
+  }
+
+  // Une autre question au hasard, jamais la même que celle affichée.
+  function another() {
+    const current = currentIndex();
+    let next = Math.floor(Math.random() * (LIST.length - 1));
+    if (next >= current) next++;
+    try {
+      localStorage.setItem(KEY, JSON.stringify({ date: DateUtil.today(), index: next }));
+    } catch {
+      // Navigation privée : la nouvelle question ne durera que jusqu'au prochain affichage.
+    }
+    return LIST[next];
+  }
+
+  return { today, another, count: LIST.length };
 })();

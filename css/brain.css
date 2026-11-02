@@ -12,9 +12,16 @@
 }
 
 .link-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-size: var(--fs-small);
   font-weight: 500;
   color: var(--text-2);
+}
+
+.link-btn i {
+  font-size: 15px;
 }
 
 /* ---------- Logo ---------- */
@@ -216,6 +223,10 @@
   line-height: 1.4;
 }
 
+.journal-prompt.is-new {
+  animation: screen-in var(--t-med) var(--ease-out);
+}
+
 /* Habitudes et tâches du jour */
 
 .progress {
@@ -326,7 +337,7 @@
 }
 
 .habit-card {
-  padding: 14px 16px 16px;
+  padding: 12px 14px 14px;
 }
 
 .habit-head {
@@ -344,25 +355,41 @@
   text-align: left;
 }
 
+.check.check-md {
+  width: 34px;
+  height: 34px;
+}
+
+.check.check-md svg {
+  width: 18px;
+  height: 18px;
+}
+
+.counter-check.counter-md {
+  width: 34px;
+  height: 34px;
+}
+
+.counter-md .counter-value {
+  font-size: 10px;
+}
+
+.counter-check.counter-md.is-done i {
+  font-size: 17px;
+}
+
 .habit-map {
   display: block;
   width: 100%;
-  margin-top: var(--s-4);
-}
-
-.habit-streak {
-  display: flex;
-  align-items: center;
-  gap: 4px;
   margin-top: var(--s-3);
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-2);
 }
 
-.habit-streak i {
-  font-size: 15px;
-  color: var(--accent);
+.habit-map .hm-grid {
+  gap: 2px;
+}
+
+.habit-map .hm-cell {
+  border-radius: 2px;
 }
 
 .habit-preview .habit-check {

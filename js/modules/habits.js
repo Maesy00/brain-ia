@@ -93,16 +93,31 @@ const Habits = (() => {
 
   // ---- Coche ----
 
+  // La couleur de l'habitude remplace le corail pour ce qui la concerne :
+  // coche, compteur et carte de régularité. Le noir suit le thème (blanc en sombre),
+  // et la coche passe en foncé sur les couleurs claires.
+  function colorVars(h) {
+    if (h.color.toLowerCase() === "#0a0a0b") return "--accent:var(--primary);--on-accent:var(--on-primary)";
+    const [r, g, b] = [1, 3, 5].map((i) => parseInt(h.color.slice(i, i + 2), 16) / 255);
+    const light = 0.2126 * r + 0.7152 * g + 0.0722 * b > 0.6;
+    return `--accent:${h.color};--on-accent:${light ? "#0a0a0b" : "#ffffff"}`;
+  }
+
   // Bouton du jour : case ronde (une fois) ou compteur qui tourne (plusieurs fois).
-  function dayButton(h, date, onChange) {
+  // size « sm » : version compacte, pour les listes de l'accueil.
+  function dayButton(h, date, onChange, size = "") {
     if (h.goalType !== "multi") {
-      return checkButton(isDone(h, date), (done) => save(h, date, done ? 1 : 0, onChange), `Valider ${h.name}`);
+      const btn = checkButton(isDone(h, date), (done) => save(h, date, done ? 1 : 0, onChange), `Valider ${h.name}`);
+      btn.style.cssText = colorVars(h);
+      if (size) btn.classList.add(`check-${size}`);
+      return btn;
     }
     const target = dayTarget(h);
-    const btn = html(`<button type="button" class="counter-check" aria-label="${escapeHtml(h.name)} : ajouter une fois"></button>`);
+    const px = size === "sm" ? 30 : 44;
+    const btn = html(`<button type="button" class="counter-check${size ? ` counter-${size}` : ""}" style="${colorVars(h)}" aria-label="${escapeHtml(h.name)} : ajouter une fois"></button>`);
     const paint = (n) => {
       btn.classList.toggle("is-done", n >= target);
-      btn.innerHTML = `${ring(n, target, 44, 4)}<span class="counter-value num">${n >= target ? icon("check", "regular") : `${n}/${target}`}</span>`;
+      btn.innerHTML = `${ring(n, target, px, size === "sm" ? 3 : 4)}<span class="counter-value num">${n >= target ? icon("check", "regular") : `${n}/${target}`}</span>`;
     };
     paint(count(h, date));
     // Un tap ajoute une fois ; une fois l'objectif atteint, un tap repart de zéro.
@@ -157,7 +172,7 @@ const Habits = (() => {
       }
     }
     return `
-      <div class="heatmap${interactive ? " is-interactive" : ""}" style="--weeks:${weeks}">
+      <div class="heatmap${interactive ? " is-interactive" : ""}" style="--weeks:${weeks};${colorVars(h)}">
         ${interactive ? `<div class="hm-months">${months}</div>` : ""}
         <div class="hm-grid">${cells}</div>
       </div>
@@ -247,7 +262,7 @@ const Habits = (() => {
           <span class="habit-check"></span>
         </div>
         <button type="button" class="habit-map" aria-label="Voir le détail de ${escapeHtml(h.name)}">${heatmap(h, CARD_WEEKS)}</button>
-        ${s.value ? `<p class="habit-streak">${icon("flame", "fill")}<span class="num">${s.value}</span> ${escapeHtml(s.unit)}</p>` : ""}
+        ${s.value ? `<p class="habit-streak" style="${colorVars(h)}">${icon("flame", "fill")}<span class="num">${s.value}</span> ${escapeHtml(s.unit)}</p>` : ""}
       </section>
     `);
     card.querySelector(".habit-check").appendChild(dayButton(h, today));

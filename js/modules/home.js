@@ -1,7 +1,7 @@
 /*
  * home.js — onglet Accueil : la journée en un coup d'œil.
- * Météo vélo (ou week-end), horoscope Balance, affirmation du jour,
- * habitudes du jour à cocher et les 3 prochaines tâches.
+ * Météo vélo (ou week-end), horoscope Balance, affirmation et question de
+ * journaling du jour, habitudes du jour à cocher et les 3 prochaines tâches.
  * La météo et l'horoscope arrivent du réseau : la carte s'affiche tout de
  * suite avec un état de chargement, puis se remplit.
  */
@@ -60,6 +60,11 @@ const Home = (() => {
           <p class="affirmation">${escapeHtml(Affirmations.today())}</p>
         </section>
 
+        <section class="card">
+          <div class="card-label">${icon("pencil-simple-line")} Journal du jour</div>
+          <p class="journal-prompt">${escapeHtml(Journal.today())}</p>
+        </section>
+
         <section class="card" data-habits>
           <div class="card-label">${icon("flame")} Habitudes du jour${habits.length ? `<span class="card-action num">${doneCount}/${habits.length}</span>` : ""}</div>
           ${
@@ -91,7 +96,7 @@ const Home = (() => {
           <span class="row-main"><span class="row-title">${escapeHtml(h.name)}</span><span class="row-sub">${escapeHtml(Habits.progressLabel(h, today))}</span></span>
         </div>
       `);
-      row.appendChild(Habits.dayButton(h, today));
+      row.appendChild(Habits.dayButton(h, today, null, "sm"));
       list.appendChild(row);
     });
     const taskList = screen.querySelector(".home-tasks");
@@ -144,36 +149,38 @@ const Home = (() => {
       return;
     }
 
-    const when = w.isTomorrow ? "Demain" : "Aujourd'hui";
-    const day = Fmt.weekdayLong(w.date);
-    const label = w.mode === "weekend" ? `${icon("sun-horizon")} Week-end · ${escapeHtml(day)}${w.isTomorrow ? " (demain)" : ""}` : `${icon("bicycle")} Vélo · ${when.toLowerCase()}`;
+    const when = w.isTomorrow ? "demain" : "aujourd'hui";
+    const label = w.mode === "weekend"
+      ? `${icon("sun-horizon")} Week-end · ${escapeHtml(Fmt.weekdayLong(w.date))}${w.isTomorrow ? " (demain)" : ""}`
+      : `${icon("bicycle")} Vélo · ${when}`;
+    const temps = w.blocks.flatMap((b) => b.hours.map((h) => Math.round(h.temp)));
+    const range = temps.length ? `${Math.min(...temps)}°–${Math.max(...temps)}°` : "";
+    const levelIcon = { dry: "drop-slash", risk: "umbrella", rain: "cloud-rain" };
 
     card.innerHTML = `
-      <div class="card-label">${label}</div>
+      <div class="card-label">${label}${range ? `<span class="card-action num">${range}</span>` : ""}</div>
       ${w.blocks
-        .map(
-          (b) => `
-        <div class="wx-block">
-          <div class="wx-head">
-            <span class="row-main"><span class="row-title">${escapeHtml(b.title)}</span><span class="row-sub">${icon("map-pin")}${escapeHtml(b.place)}</span></span>
+        .map((b) => {
+          // Une étiquette d'heure sur trois quand la frise est longue (week-end).
+          const step = b.hours.length > 6 ? 3 : 1;
+          return `
+        <div class="wx-row">
+          <div class="wx-top">
+            <span class="wx-title">${escapeHtml(b.title)}<span class="wx-meta">${escapeHtml(b.slot)} · ${escapeHtml(b.place)}</span></span>
+            <span class="wx-pill is-${b.verdict.level}">${icon(levelIcon[b.verdict.level], b.verdict.level === "dry" ? "regular" : "fill")}${escapeHtml(Weather.LABEL[b.verdict.level])}</span>
           </div>
-          <p class="wx-verdict is-${b.verdict.level}">${icon(b.verdict.level === "rain" ? "cloud-rain" : b.verdict.level === "risk" ? "umbrella" : "drop-slash", b.verdict.level === "dry" ? "regular" : "fill")}<span>${escapeHtml(b.verdict.text)}</span></p>
-          <div class="wx-hours${b.hours.length > 6 ? " is-scroll" : ""}">
+          ${b.verdict.detail ? `<p class="wx-detail">${escapeHtml(b.verdict.detail)}</p>` : ""}
+          <div class="wx-bar" style="--n:${b.hours.length}">
             ${b.hours
               .map(
-                (h) => `
-              <div class="wx-hour is-${h.level}">
-                <span class="wx-time num">${h.hour}h</span>
-                ${icon(Weather.hourIcon(h), h.level === "dry" ? "regular" : "fill")}
-                <span class="wx-temp num">${Math.round(h.temp)}°</span>
-                <span class="wx-prob num">${escapeHtml(Weather.pct(h.prob))}</span>
-                <span class="wx-mm num">${escapeHtml(Weather.mm(h.mm))}</span>
-              </div>`
+                (h, i) => `<span class="wx-seg is-${h.level}" title="${h.hour}h · ${escapeHtml(Weather.pct(h.prob))} · ${escapeHtml(Weather.mm(h.mm))} · ${Math.round(h.temp)}°">
+                  <span class="wx-tick"></span><span class="wx-hour-label num">${i % step === 0 ? `${h.hour}h` : ""}</span>
+                </span>`
               )
               .join("")}
           </div>
-        </div>`
-        )
+        </div>`;
+        })
         .join("")}
       ${w.missing ? `<p class="section-note wx-note">Maison ou Travail pas encore enregistrés : météo à ta position actuelle.</p>` : ""}
     `;

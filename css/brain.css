@@ -45,128 +45,103 @@
   }
 }
 
-/* Météo : verdict par créneau, puis le détail heure par heure. */
+/* Météo, version compacte : une ligne par trajet (titre + pastille), puis une
+   frise d'une case par heure. Gris clair = Sec, gris moyen = Risque, noir = Pluie. */
 
-.wx-block + .wx-block {
-  margin-top: var(--s-5);
-  padding-top: var(--s-5);
+.wx-row + .wx-row {
+  margin-top: var(--s-4);
+  padding-top: var(--s-4);
   border-top: 1px solid var(--border);
 }
 
-.wx-head .row-sub {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-}
-
-.wx-head .row-sub i {
-  font-size: 13px;
-}
-
-.wx-verdict {
+.wx-top {
   display: flex;
   align-items: center;
-  gap: var(--s-2);
-  margin-top: var(--s-3);
-  padding: 10px 12px;
-  border-radius: var(--r-inner);
-  font-size: var(--fs-small);
-  font-weight: 500;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+
+.wx-title {
+  font-weight: 600;
+  min-width: 0;
+}
+
+.wx-meta {
+  margin-left: 6px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-3);
+}
+
+.wx-pill {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: var(--r-pill);
+  font-size: 13px;
+  font-weight: 600;
   border: 1px solid var(--border-strong);
   color: var(--text-2);
 }
 
-.wx-verdict i {
-  font-size: 18px;
-  flex: none;
+.wx-pill i {
+  font-size: 14px;
 }
 
-.wx-verdict.is-risk {
+.wx-pill.is-risk {
   background: var(--surface-3);
   border-color: transparent;
   color: var(--text);
-  font-weight: 600;
 }
 
-.wx-verdict.is-rain {
+.wx-pill.is-rain {
   background: var(--primary);
   border-color: transparent;
   color: var(--on-primary);
-  font-weight: 600;
 }
 
-.wx-hours {
+.wx-detail {
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.wx-bar {
   display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(0, 1fr);
-  gap: var(--s-1);
+  grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+  gap: 3px;
   margin-top: var(--s-3);
 }
 
-.wx-hours.is-scroll {
-  grid-auto-columns: 54px;
-  overflow-x: auto;
-  margin-left: -18px;
-  margin-right: -18px;
-  padding: 0 18px;
-  scrollbar-width: none;
-}
-
-.wx-hours.is-scroll::-webkit-scrollbar {
-  display: none;
-}
-
-.wx-hour {
+.wx-seg {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  padding: var(--s-2) 0;
-  border-radius: var(--r-control);
-  font-size: var(--fs-caption);
-  color: var(--text-2);
+  gap: 4px;
+  min-width: 0;
 }
 
-.wx-hour i {
-  font-size: 20px;
-  margin: 2px 0;
-  color: var(--text-3);
-}
-
-.wx-time {
-  font-weight: 600;
-  color: var(--text);
-}
-
-.wx-temp {
-  font-size: var(--fs-small);
-  font-weight: 500;
-  color: var(--text);
-}
-
-.wx-mm {
-  color: var(--text-3);
-}
-
-.wx-hour.is-risk {
-  background: var(--surface-2);
-}
-
-.wx-hour.is-risk i,
-.wx-hour.is-risk .wx-prob {
-  color: var(--text);
-  font-weight: 600;
-}
-
-.wx-hour.is-rain {
+.wx-tick {
+  height: 6px;
+  border-radius: 3px;
   background: var(--surface-3);
 }
 
-.wx-hour.is-rain i,
-.wx-hour.is-rain .wx-prob,
-.wx-hour.is-rain .wx-mm {
-  color: var(--text);
-  font-weight: 700;
+.wx-seg.is-risk .wx-tick {
+  background: var(--text-3);
+}
+
+.wx-seg.is-rain .wx-tick {
+  background: var(--text);
+}
+
+.wx-hour-label {
+  font-size: 11px;
+  color: var(--text-3);
+  white-space: nowrap;
 }
 
 .wx-note {
@@ -234,6 +209,13 @@
   line-height: 1.35;
 }
 
+.journal-prompt {
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  line-height: 1.4;
+}
+
 /* Habitudes et tâches du jour */
 
 .progress {
@@ -268,7 +250,6 @@
   display: block;
 }
 
-.home-habit .check,
 .habit-check .check {
   width: 40px;
   height: 40px;
@@ -322,6 +303,19 @@
 
 .counter-check.is-done i {
   font-size: 20px;
+}
+
+.counter-check.counter-sm {
+  width: 30px;
+  height: 30px;
+}
+
+.counter-sm .counter-value {
+  font-size: 9px;
+}
+
+.counter-check.counter-sm.is-done i {
+  font-size: 15px;
 }
 
 /* ---------- Habitudes ---------- */

@@ -24,17 +24,6 @@ const Weather = (() => {
     return "dry";
   }
 
-  // Pictogramme d'une heure : pluie et risque d'abord, sinon le ciel.
-  function hourIcon(hour) {
-    if (hour.level === "rain") return "cloud-rain";
-    if (hour.level === "risk") return "umbrella";
-    const c = hour.code ?? 0;
-    if (c <= 1) return "sun";
-    if (c === 2) return "cloud-sun";
-    if (c === 45 || c === 48) return "cloud-fog";
-    return "cloud";
-  }
-
   // ---- Positions ----
 
   function locate() {
@@ -73,7 +62,7 @@ const Weather = (() => {
     const params = new URLSearchParams({
       latitude: lat.toFixed(4),
       longitude: lon.toFixed(4),
-      hourly: "precipitation_probability,precipitation,temperature_2m,weather_code",
+      hourly: "precipitation_probability,precipitation,temperature_2m",
       timezone: "auto",
       forecast_days: "3",
     });
@@ -87,7 +76,6 @@ const Weather = (() => {
       prob: h.precipitation_probability[i],
       mm: h.precipitation[i],
       temp: h.temperature_2m[i],
-      code: h.weather_code[i],
     }));
   }
 
@@ -124,27 +112,29 @@ const Weather = (() => {
   const pct = (v) => `${Math.round(v ?? 0)} %`;
   const mm = (v) => `${Fmt.number(Math.round((v ?? 0) * 10) / 10)} mm`;
 
-  // Verdict d'un créneau = la pire heure, avec les heures concernées.
+  const worstOf = (hours) => hours.reduce((w, h) => (RANK[h.level] > RANK[w] ? h.level : w), "dry");
+
+  // Verdict d'un créneau = la pire heure ; detail = les heures concernées.
   function verdict(hours) {
-    if (!hours.length) return { level: "dry", text: "Pas de prévision" };
-    const worst = hours.reduce((w, h) => (RANK[h.level] > RANK[w] ? h.level : w), "dry");
-    if (worst === "dry") return { level: "dry", text: "Sec" };
+    if (!hours.length) return { level: "dry", detail: "Pas de prévision" };
+    const worst = worstOf(hours);
+    if (worst === "dry") return { level: "dry", detail: "" };
     const hit = hours.filter((h) => h.level === worst);
     const maxProb = Math.max(...hit.map((h) => h.prob ?? 0));
     const maxMm = Math.max(...hit.map((h) => h.mm ?? 0));
-    return { level: worst, text: `${LABEL[worst]} ${ranges(hit).join(", ")} · ${pct(maxProb)} · ${mm(maxMm)}` };
+    return { level: worst, detail: `${ranges(hit).join(", ")} · ${pct(maxProb)} · ${mm(maxMm)}` };
   }
 
   // Résumé d'une journée de week-end : les plages Pluie puis Risque.
   function daySummary(hours) {
-    const parts = ["rain", "risk"]
+    const detail = ["rain", "risk"]
       .map((lvl) => {
         const hit = hours.filter((h) => h.level === lvl);
         return hit.length ? `${LABEL[lvl]} ${ranges(hit).join(", ")}` : "";
       })
-      .filter(Boolean);
-    const worst = hours.reduce((w, h) => (RANK[h.level] > RANK[w] ? h.level : w), "dry");
-    return { level: worst, text: parts.length ? parts.join(" · ") : "Sec toute la journée" };
+      .filter(Boolean)
+      .join(" · ");
+    return { level: worstOf(hours), detail: detail || "Toute la journée" };
   }
 
   // Le jour affiché : aujourd'hui, ou demain une fois le dernier créneau passé.
@@ -172,7 +162,7 @@ const Weather = (() => {
       if (!place) return { error: "position" };
       try {
         const hours = slice(await forecast(place.lat, place.lon), date, WEEKEND_START, WEEKEND_END, s);
-        return { date, isTomorrow, mode: "weekend", blocks: [{ title: "Toute la journée", place: here ? "Ta position" : s.homeLabel || "Maison", hours, verdict: daySummary(hours) }] };
+        return { date, isTomorrow, mode: "weekend", blocks: [{ title: "Journée", slot: `${WEEKEND_START}h–${WEEKEND_END}h`, place: here ? "Ta position" : s.homeLabel || "Maison", hours, verdict: daySummary(hours) }] };
       } catch {
         return { error: "network" };
       }
@@ -193,8 +183,8 @@ const Weather = (() => {
         mode: "commute",
         missing: needsHere,
         blocks: [
-          { title: `Aller · ${s.outStart}h–${s.outEnd}h`, place: home.label, hours: out, verdict: verdict(out) },
-          { title: `Retour · ${s.backStart}h–${s.backEnd}h`, place: work.label, hours: back, verdict: verdict(back) },
+          { title: "Aller", slot: `${s.outStart}h–${s.outEnd}h`, place: home.label, hours: out, verdict: verdict(out) },
+          { title: "Retour", slot: `${s.backStart}h–${s.backEnd}h`, place: work.label, hours: back, verdict: verdict(back) },
         ],
       };
     } catch {
@@ -206,5 +196,5 @@ const Weather = (() => {
     forecasts.clear();
   }
 
-  return { today, locate, placeName, hourIcon, reset, LABEL, pct, mm };
+  return { today, locate, placeName, reset, LABEL, pct, mm };
 })();

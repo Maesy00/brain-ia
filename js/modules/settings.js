@@ -65,6 +65,7 @@ const Settings = (() => {
         <div class="row"><span class="row-main"><span class="row-title">Météo</span><span class="row-sub">Open-Meteo</span></span></div>
         <div class="row"><span class="row-main"><span class="row-title">Horoscope</span><span class="row-sub">freehoroscopeapi.com, traduit par MyMemory</span></span></div>
         <div class="row"><span class="row-main"><span class="row-title">Affirmations</span><span class="row-sub">Banque Brain.ia · ${Affirmations.count} phrases</span></span></div>
+        <div class="row"><span class="row-main"><span class="row-title">Journal</span><span class="row-sub">Banque Brain.ia · ${Journal.count} questions</span></span></div>
       </div>
       <p class="section-note">Tout est gratuit, sans clé ni abonnement. Brain.ia · version 1.0</p>
     `;

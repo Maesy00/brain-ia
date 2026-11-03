@@ -1,7 +1,7 @@
 /*
  * supabase-config.js — connexion à la base de données en ligne.
  * Projet Supabase « Divers.ia » (ex-Aurora), partagé avec Coach.ia,
- * Pause, Ironly et Osmosy (tables "brain_*") :
+ * Pause, Ironly et Inventory.ia (tables "brain_*") :
  * un seul compte pour toutes les apps. L'URL et la clé "anon" sont
  * publiques par design : la sécurité vient des règles RLS de Supabase
  * (chacun ne lit/écrit que ses propres données), pas du secret de la clé.

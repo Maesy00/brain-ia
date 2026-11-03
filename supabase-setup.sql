@@ -1,6 +1,6 @@
 -- Brain.ia — tables Supabase.
 -- À exécuter dans l'éditeur SQL du projet Supabase « Divers.ia » (ex-Aurora,
--- le même que pour Coach.ia, Pause, Ironly et Osmosy : même compte de connexion).
+-- le même que pour Coach.ia, Pause, Ironly et Inventory.ia : même compte de connexion).
 -- Tables préfixées "brain_" : aucun risque pour les données des autres apps.
 -- Le script peut être relancé sans danger (if not exists partout).
 --
